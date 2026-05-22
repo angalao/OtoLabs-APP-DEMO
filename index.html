@@ -1,0 +1,1486 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="OtoLabs">
+<meta name="theme-color" content="#f4f6f9">
+<title>OtoLabs — Cochlear Fitness</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --teal: #0F7A5A;
+  --teal-mid: #1D9E75;
+  --teal-dim: #1D9E75;
+  --teal-glow: rgba(29,158,117,0.1);
+  --teal-glow2: rgba(29,158,117,0.07);
+  --amber: #B45A00;
+  --amber-dim: rgba(180,90,0,0.08);
+  --red: #C0392B;
+  --red-dim: rgba(192,57,43,0.08);
+  --bg: #f4f6f9;
+  --bg2: #eef0f5;
+  --bg3: #e6e9f0;
+  --card: #ffffff;
+  --card-border: rgba(0,0,0,0.08);
+  --text: #1a2340;
+  --text2: rgba(26,35,64,0.55);
+  --text3: rgba(26,35,64,0.35);
+  --safe: env(safe-area-inset-bottom, 0px);
+}
+* { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+html, body { height: 100%; overflow: hidden; background: var(--bg); font-family: 'DM Sans', sans-serif; color: var(--text); }
+
+/* APP SHELL */
+.app { display: flex; flex-direction: column; height: 100dvh; height: -webkit-fill-available; }
+.status-bar { height: env(safe-area-inset-top, 44px); background: var(--bg); flex-shrink: 0; }
+
+/* HEADER */
+.header {
+  flex-shrink: 0;
+  padding: 10px 20px 12px;
+  background: var(--bg);
+  display: flex; align-items: center; justify-content: space-between;
+  border-bottom: 0.5px solid var(--card-border);
+}
+.header-brand { display: flex; align-items: center; gap: 10px; }
+.logo { width: 32px; height: 32px; border-radius: 10px; background: linear-gradient(135deg, #0F6E56, #1D9E75); display: flex; align-items: center; justify-content: center; }
+.logo svg { width: 18px; height: 18px; }
+.brand-name { font-size: 17px; font-weight: 600; letter-spacing: -0.3px; }
+.brand-sub { font-size: 10px; color: var(--teal); letter-spacing: 0.1em; text-transform: uppercase; font-weight: 500; }
+.device-pill {
+  display: flex; align-items: center; gap: 6px;
+  background: rgba(29,158,117,0.08); border: 0.5px solid rgba(29,158,117,0.25);
+  border-radius: 20px; padding: 5px 10px; font-size: 11px; color: #0F6E56; font-weight: 500;
+}
+.pulse { width: 6px; height: 6px; border-radius: 50%; background: #1D9E75; animation: blink 1.8s infinite; }
+@keyframes blink { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:0.4;transform:scale(0.8)} }
+
+/* CONTENT */
+.content { flex: 1; overflow-y: auto; overflow-x: hidden; -webkit-overflow-scrolling: touch; scroll-behavior: smooth; }
+.screen { display: none; padding: 16px; padding-bottom: calc(80px + var(--safe)); animation: fadeUp 0.22s ease; }
+.screen.active { display: block; }
+@keyframes fadeUp { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:translateY(0)} }
+
+/* BOTTOM NAV */
+.bottom-nav {
+  flex-shrink: 0;
+  background: rgba(244,246,249,0.97);
+  backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+  border-top: 0.5px solid var(--card-border);
+  display: flex;
+  padding-bottom: var(--safe);
+}
+.nav-item {
+  flex: 1; display: flex; flex-direction: column; align-items: center;
+  padding: 10px 4px 8px; gap: 4px; background: none; border: none;
+  color: var(--text3); font-size: 10px; font-family: 'DM Sans', sans-serif;
+  cursor: pointer; transition: color 0.15s; font-weight: 500;
+}
+.nav-item.active { color: var(--teal); }
+.nav-icon { font-size: 22px; line-height: 1; }
+
+/* CARDS */
+.card {
+  background: var(--card); border: 0.5px solid var(--card-border);
+  border-radius: 18px; padding: 16px; margin-bottom: 12px;
+  position: relative; overflow: hidden;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+}
+.card-accent { border-left: 3px solid #1D9E75; }
+.card-title { font-size: 12px; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text2); margin-bottom: 12px; font-weight: 500; display: flex; align-items: center; justify-content: space-between; }
+.pill { font-size: 10px; padding: 3px 8px; border-radius: 20px; font-weight: 600; letter-spacing: 0.05em; }
+.pill-teal { background: rgba(29,158,117,0.1); color: #0F6E56; }
+.pill-amber { background: rgba(180,90,0,0.08); color: #854f0b; }
+.pill-red { background: rgba(192,57,43,0.08); color: #C0392B; }
+
+/* SCORE RING */
+.score-section { display: flex; align-items: center; gap: 20px; padding: 4px 0 8px; }
+.ring-wrap { position: relative; width: 100px; height: 100px; flex-shrink: 0; }
+.ring-wrap svg { transform: rotate(-90deg); }
+.ring-center { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+.ring-num { font-size: 28px; font-weight: 600; color: #1D9E75; line-height: 1; font-family: 'DM Mono', monospace; }
+.ring-label { font-size: 10px; color: var(--text2); }
+.score-bars { flex: 1; display: flex; flex-direction: column; gap: 8px; }
+.bar-row { display: flex; align-items: center; gap: 8px; }
+.bar-label { font-size: 11px; color: var(--text2); width: 36px; }
+.bar-track { flex: 1; height: 5px; background: rgba(0,0,0,0.07); border-radius: 3px; overflow: hidden; }
+.bar-fill { height: 100%; border-radius: 3px; transition: width 0.6s ease; }
+.bar-val { font-size: 11px; font-weight: 600; width: 32px; text-align: right; font-family: 'DM Mono', monospace; }
+
+/* METRIC GRID */
+.metric-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 12px; }
+.metric-card { background: var(--card); border: 0.5px solid var(--card-border); border-radius: 16px; padding: 14px 14px 12px; }
+.metric-val { font-size: 26px; font-weight: 600; line-height: 1; margin: 4px 0 3px; font-family: 'DM Mono', monospace; }
+.metric-lbl { font-size: 11px; color: var(--text2); }
+.metric-sub { font-size: 10px; color: var(--text3); }
+.teal { color: var(--teal); }
+.amber { color: var(--amber); }
+.red { color: var(--red); }
+
+/* BIG DB DISPLAY */
+.db-big { font-size: 72px; font-weight: 600; font-family: 'DM Mono', monospace; color: #1D9E75; text-align: center; line-height: 1; letter-spacing: -2px; transition: color 0.3s; }
+.db-unit { font-size: 18px; color: var(--text2); }
+.db-bar-track { height: 8px; background: rgba(0,0,0,0.07); border-radius: 4px; overflow: hidden; margin: 14px 0 6px; }
+.db-bar-fill { height: 100%; border-radius: 4px; background: var(--teal); transition: width 0.25s ease, background 0.3s; }
+.db-desc { font-size: 13px; color: var(--text2); text-align: center; min-height: 18px; }
+
+/* BIG BUTTON */
+.btn-main {
+  width: 100%; padding: 16px; border-radius: 16px; border: none;
+  background: var(--teal-mid, #1D9E75); color: #ffffff; font-size: 16px; font-weight: 600;
+  font-family: 'DM Sans', sans-serif; cursor: pointer; margin-top: 12px;
+  transition: opacity 0.15s, transform 0.1s; letter-spacing: -0.2px;
+}
+.btn-main:active { transform: scale(0.97); opacity: 0.9; }
+.btn-main:disabled { background: rgba(29,158,117,0.2); color: rgba(26,35,64,0.35); }
+.btn-outline {
+  width: 100%; padding: 14px; border-radius: 14px;
+  border: 1px solid var(--card-border); background: var(--card);
+  color: var(--text); font-size: 14px; font-weight: 500;
+  font-family: 'DM Sans', sans-serif; cursor: pointer; margin-top: 8px;
+  transition: background 0.15s;
+}
+.btn-outline:active { background: rgba(0,0,0,0.05); }
+.btn-row { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 12px; }
+.btn-half { padding: 14px 10px; border-radius: 14px; border: 1px solid var(--card-border); background: var(--bg2); color: var(--text); font-size: 14px; font-weight: 500; font-family: 'DM Sans', sans-serif; cursor: pointer; text-align: center; transition: all 0.15s; }
+.btn-half:active { transform: scale(0.96); }
+.btn-half.heard { background: rgba(29,158,117,0.09); border-color: #1D9E75; color: #0F6E56; }
+.btn-half.missed { background: rgba(192,57,43,0.07); border-color: #C0392B; color: #C0392B; }
+
+/* AUDIOGRAM */
+.freq-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin: 12px 0; }
+.freq-btn {
+  padding: 14px 6px; border-radius: 14px; border: 0.5px solid var(--card-border);
+  background: var(--card); color: var(--text2); font-size: 13px; font-weight: 500;
+  font-family: 'DM Sans', sans-serif; cursor: pointer; text-align: center;
+  transition: all 0.15s; display: flex; flex-direction: column; align-items: center; gap: 3px;
+}
+.freq-btn.playing { border-color: #1D9E75; color: #0F6E56; background: rgba(29,158,117,0.08); }
+.freq-btn.heard { border-color: #1D9E75; background: rgba(29,158,117,0.08); color: #0F6E56; }
+.freq-btn.missed { border-color: #C0392B; background: rgba(192,57,43,0.07); color: #C0392B; }
+.freq-hz { font-size: 9px; opacity: 0.6; }
+canvas.audiogram { width: 100%; height: 160px; border-radius: 12px; background: rgba(0,0,0,0.02); border: 0.5px solid var(--card-border); display: block; }
+
+/* TINNITUS */
+.slider-section { margin: 14px 0; }
+.slider-header { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 8px; }
+.slider-name { font-size: 13px; color: var(--text2); }
+.slider-val { font-size: 18px; font-weight: 600; color: var(--teal); font-family: 'DM Mono', monospace; }
+input[type=range] {
+  -webkit-appearance: none; width: 100%; height: 6px;
+  background: rgba(0,0,0,0.1); border-radius: 3px; outline: none;
+}
+input[type=range]::-webkit-slider-thumb {
+  -webkit-appearance: none; width: 24px; height: 24px; border-radius: 50%;
+  background: #1D9E75; box-shadow: 0 2px 8px rgba(29,158,117,0.3);
+  cursor: pointer;
+}
+.history-item { display: flex; align-items: center; justify-content: space-between; padding: 12px 0; border-bottom: 0.5px solid var(--card-border); }
+.history-item:last-child { border-bottom: none; }
+.history-label { font-size: 14px; font-weight: 500; }
+.history-sub { font-size: 11px; color: var(--text2); margin-top: 2px; }
+.history-date { font-size: 11px; color: var(--text3); }
+
+/* OAE SCAN */
+.scan-anim { display: flex; flex-direction: column; align-items: center; padding: 24px 0; gap: 16px; }
+.scan-circle { width: 110px; height: 110px; border-radius: 50%; border: 2px solid rgba(0,0,0,0.1); background: var(--bg2); display: flex; align-items: center; justify-content: center; position: relative; }
+.scan-ring { position: absolute; inset: -6px; border-radius: 50%; border: 2px solid transparent; border-top-color: var(--teal); animation: spin 1.4s linear infinite; display: none; }
+@keyframes spin { to { transform: rotate(360deg); } }
+.scan-icon { font-size: 40px; }
+.scan-pct { font-size: 36px; font-weight: 600; font-family: 'DM Mono', monospace; color: #1D9E75; }
+.scan-msg { font-size: 13px; color: var(--text2); text-align: center; }
+.progress-track { height: 4px; background: rgba(0,0,0,0.07); border-radius: 2px; overflow: hidden; }
+.progress-fill { height: 100%; background: var(--teal); border-radius: 2px; width: 0; transition: width 0.3s linear; }
+.snr-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 12px; }
+.snr-chip { background: var(--card); border: 0.5px solid var(--card-border); border-radius: 12px; padding: 10px 8px; text-align: center; }
+.snr-freq-lbl { font-size: 10px; color: var(--text3); }
+.snr-db { font-size: 18px; font-weight: 600; font-family: 'DM Mono', monospace; }
+.snr-tag { font-size: 9px; font-weight: 600; }
+
+/* DEVICE */
+.device-row { display: flex; align-items: center; justify-content: space-between; padding: 14px 0; border-bottom: 0.5px solid var(--card-border); }
+.device-row:last-child { border-bottom: none; }
+.device-icon { width: 36px; height: 36px; border-radius: 10px; background: rgba(29,158,117,0.09); display: flex; align-items: center; justify-content: center; font-size: 18px; margin-right: 12px; flex-shrink: 0; }
+.device-info { flex: 1; }
+.device-name { font-size: 14px; font-weight: 500; }
+.device-detail { font-size: 11px; color: var(--text2); margin-top: 2px; }
+.badge-connected { font-size: 11px; padding: 4px 10px; border-radius: 20px; background: rgba(29,158,117,0.1); color: #0F6E56; font-weight: 600; }
+.dome-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px; }
+.dome-card { padding: 14px 12px; border-radius: 14px; border: 0.5px solid var(--card-border); background: var(--card); text-align: center; cursor: pointer; transition: all 0.15s; }
+.dome-card.active { border-color: #1D9E75; background: rgba(29,158,117,0.07); }
+.dome-name { font-size: 13px; font-weight: 600; }
+.dome-sub { font-size: 11px; color: var(--text2); margin-top: 3px; }
+.dome-indicator { font-size: 10px; margin-top: 6px; }
+
+/* CHART */
+canvas.chart-canvas { width: 100%; display: block; border-radius: 8px; }
+
+/* ALERT BANNER */
+.alert { padding: 12px 14px; border-radius: 12px; font-size: 13px; margin-bottom: 10px; display: flex; align-items: flex-start; gap: 8px; }
+.alert-info { background: rgba(29,158,117,0.08); border: 0.5px solid rgba(29,158,117,0.2); color: #0F6E56; }
+.alert-warn { background: rgba(180,90,0,0.07); border: 0.5px solid rgba(180,90,0,0.18); color: #854f0b; }
+.alert-icon { font-size: 16px; flex-shrink: 0; margin-top: 1px; }
+
+/* SECTION DIVIDER */
+.section-head { font-size: 18px; font-weight: 600; margin: 4px 0 14px; letter-spacing: -0.4px; }
+
+/* SCROLL TABLE */
+.scroll-hint { text-align: center; font-size: 10px; color: var(--text3); padding: 4px; }
+
+/* TOAST */
+.toast {
+  position: fixed; bottom: calc(90px + var(--safe)); left: 50%; transform: translateX(-50%) translateY(20px);
+  background: #1D9E75; color: #ffffff; padding: 10px 20px; border-radius: 24px;
+  font-size: 13px; font-weight: 600; opacity: 0; transition: all 0.25s; pointer-events: none; white-space: nowrap; z-index: 100;
+}
+.toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+</style>
+</head>
+<body>
+
+<div class="app">
+  <div class="status-bar"></div>
+
+  <div class="header">
+    <div class="header-brand">
+      <div class="logo">
+        <svg viewBox="0 0 18 18" fill="none">
+          <path d="M9 2C6.24 2 4 4.24 4 7c0 1.8.96 3.37 2.4 4.24V13h5v-1.76C12.04 10.37 13 8.8 13 7c0-2.76-2.24-5-4-5z" fill="white" opacity="0.9"/>
+          <circle cx="9" cy="15" r="1.4" fill="white" opacity="0.5"/>
+        </svg>
+      </div>
+      <div>
+        <div class="brand-name">OtoLabs</div>
+        <div class="brand-sub">Hearing Innovation</div>
+      </div>
+    </div>
+    <div class="device-pill" id="device-pill">
+      <div class="pulse"></div>
+      <span>MFi Connected</span>
+    </div>
+  </div>
+
+  <div class="content">
+
+    <!-- DASHBOARD -->
+    <div class="screen active" id="screen-home">
+      <div class="section-head">Good morning 👋</div>
+
+      <div class="card">
+        <div class="card-title">Cochlear fitness <span class="pill pill-teal">This week</span></div>
+        <div class="score-section">
+          <div class="ring-wrap">
+            <svg width="100" height="100" viewBox="0 0 100 100">
+              <circle cx="50" cy="50" r="42" fill="none" stroke="rgba(0,0,0,0.06)" stroke-width="8"/>
+              <circle cx="50" cy="50" r="42" fill="none" stroke="#1D9E75" stroke-width="8"
+                stroke-linecap="round" stroke-dasharray="264" stroke-dashoffset="46"
+                style="transition: stroke-dashoffset 1s ease"/>
+            </svg>
+            <div class="ring-center">
+              <div class="ring-num">84</div>
+              <div class="ring-label">/100</div>
+            </div>
+          </div>
+          <div class="score-bars">
+            <div class="bar-row">
+              <span class="bar-label" style="font-size:10px">2 kHz</span>
+              <div class="bar-track"><div class="bar-fill" style="width:89%; background:var(--teal)"></div></div>
+              <span class="bar-val teal">89%</span>
+            </div>
+            <div class="bar-row">
+              <span class="bar-label" style="font-size:10px">3 kHz</span>
+              <div class="bar-track"><div class="bar-fill" style="width:85%; background:var(--teal)"></div></div>
+              <span class="bar-val teal">85%</span>
+            </div>
+            <div class="bar-row">
+              <span class="bar-label" style="font-size:10px">4 kHz</span>
+              <div class="bar-track"><div class="bar-fill" style="width:76%; background:var(--amber)"></div></div>
+              <span class="bar-val amber">76%</span>
+            </div>
+            <div class="bar-row">
+              <span class="bar-label" style="font-size:10px">6 kHz</span>
+              <div class="bar-track"><div class="bar-fill" style="width:61%; background:var(--amber)"></div></div>
+              <span class="bar-val amber">61%</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="metric-grid">
+        <div class="metric-card">
+          <div class="metric-lbl">Noise dose</div>
+          <div class="metric-val amber" id="dash-dose">34%</div>
+          <div class="metric-sub">NIOSH daily limit</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-lbl">Right now</div>
+          <div class="metric-val teal" id="dash-db">— dB</div>
+          <div class="metric-sub">Live level</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-lbl">Last OAE</div>
+          <div class="metric-val teal">+2.1</div>
+          <div class="metric-sub">dB vs last week</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-lbl">Tinnitus</div>
+          <div class="metric-val" style="font-size:18px; color:var(--text)">6 kHz</div>
+          <div class="metric-sub">Stable this week</div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">8-week score trend</div>
+        <div style="position:relative; height:120px">
+          <canvas id="trendChart" class="chart-canvas" role="img" aria-label="8 week cochlear fitness trend"></canvas>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Recent activity</div>
+        <div class="history-item">
+          <div>
+            <div class="history-label">Noise alert — 88 dB peak</div>
+            <div class="history-sub">Exposure exceeded 20 min</div>
+          </div>
+          <div class="history-date">Today</div>
+        </div>
+        <div class="history-item">
+          <div>
+            <div class="history-label">OAE scan complete</div>
+            <div class="history-sub">Score improved to 84</div>
+          </div>
+          <div class="history-date">3 days</div>
+        </div>
+        <div class="history-item">
+          <div>
+            <div class="history-label">Tinnitus snapshot saved</div>
+            <div class="history-sub">6 kHz · Level 4 — stable</div>
+          </div>
+          <div class="history-date">1 week</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- NOISE DOSIMETRY -->
+    <div class="screen" id="screen-noise">
+      <div class="section-head">Noise dosimetry</div>
+
+      <div class="card card-accent">
+        <div class="card-title">Live sound level <span class="pill pill-teal" id="noise-pill">Ready</span></div>
+        <div class="db-big" id="db-display">—<span class="db-unit"> dB</span></div>
+        <div class="db-bar-track" style="margin:16px 0 8px">
+          <div class="db-bar-fill" id="db-bar" style="width:0%"></div>
+        </div>
+        <div class="db-desc" id="db-desc">Tap below to begin measuring via your MFi device</div>
+        <button class="btn-main" id="mic-btn" onclick="toggleMic()">▶ Start monitoring</button>
+      </div>
+
+      <div class="metric-grid">
+        <div class="metric-card">
+          <div class="metric-lbl">Daily dose</div>
+          <div class="metric-val amber" id="daily-dose">34%</div>
+          <div class="metric-sub">NIOSH 85 dB REL</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-lbl">Hourly avg</div>
+          <div class="metric-val">71 dB</div>
+          <div class="metric-sub">Past 60 min</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-lbl">Today peak</div>
+          <div class="metric-val red">88 dB</div>
+          <div class="metric-sub">11:42 AM</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-lbl">Weekly</div>
+          <div class="metric-val teal">18%</div>
+          <div class="metric-sub">Cumulative dose</div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Hourly exposure today</div>
+        <div style="position:relative; height:120px">
+          <canvas id="doseChart" class="chart-canvas" role="img" aria-label="Hourly noise exposure bar chart"></canvas>
+        </div>
+      </div>
+
+      <div class="alert alert-warn">
+        <div class="alert-icon">⚠</div>
+        <div>88 dB peak recorded at 11:42 AM. Cumulative exposure building — consider a break if noise continues.</div>
+      </div>
+    </div>
+
+    <!-- HEARING TEST -->
+    <div class="screen" id="screen-hearing">
+      <div class="section-head">Hearing threshold</div>
+
+      <div class="card">
+        <div class="card-title">In-situ audiogram <span class="pill pill-teal" id="audio-pill">Threshold search</span></div>
+        <p style="font-size:13px; color:var(--text2); margin-bottom:10px; line-height:1.5">Select ear, then tap a frequency to begin the threshold search. Respond after each tone.</p>
+
+        <!-- EAR TOGGLE -->
+        <div id="ear-toggle" style="display:flex; border-radius:14px; overflow:hidden; border:1.5px solid var(--card-border); margin-bottom:12px;">
+          <button id="ear-btn-R" onclick="selectEar('R')"
+            style="flex:1; padding:11px 8px; border:none; font-size:14px; font-weight:700; font-family:'DM Sans',sans-serif; cursor:pointer; transition:all 0.18s;
+                   background:#e53e3e; color:#fff; border-radius:12px 0 0 12px; letter-spacing:0.02em;">
+            R &nbsp;Right
+          </button>
+          <button id="ear-btn-L" onclick="selectEar('L')"
+            style="flex:1; padding:11px 8px; border:none; font-size:14px; font-weight:700; font-family:'DM Sans',sans-serif; cursor:pointer; transition:all 0.18s;
+                   background:var(--card); color:var(--text3); border-radius:0 12px 12px 0; letter-spacing:0.02em;">
+            L &nbsp;Left
+          </button>
+        </div>
+
+        <canvas id="audiogramCanvas" class="audiogram" width="340" height="180"></canvas>
+
+        <!-- Audiogram legend -->
+        <div style="display:flex; gap:16px; justify-content:center; margin:6px 0 10px; font-size:10px; color:var(--text2);">
+          <span style="display:flex;align-items:center;gap:4px;"><span style="color:#e53e3e;font-weight:700;font-size:13px;">O</span> Right ear</span>
+          <span style="display:flex;align-items:center;gap:4px;"><span style="color:#3b82f6;font-weight:700;font-size:13px;">X</span> Left ear</span>
+          <span style="display:flex;align-items:center;gap:4px;"><span style="display:inline-block;width:16px;height:0;border-top:1.5px dashed rgba(100,200,150,0.5)"></span> Normal</span>
+        </div>
+
+        <!-- Current level indicator -->
+        <div id="level-indicator" style="display:none; margin:0 0 10px; padding:12px 14px; border-radius:12px; background:rgba(29,158,117,0.07); border:0.5px solid rgba(29,158,117,0.2);">
+          <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:4px;">
+            <span id="ear-indicator-label" style="font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:0.07em; color:#e53e3e;">RIGHT EAR</span>
+            <span style="font-size:11px; color:var(--text2);" id="search-freq-label">—</span>
+          </div>
+          <div style="display:flex; align-items:baseline; gap:6px;">
+            <span id="current-db-display" style="font-size:36px; font-weight:600; font-family:'DM Mono',monospace; line-height:1; color:var(--teal);">40</span>
+            <span style="font-size:14px; color:var(--text2);">dB HL</span>
+            <div style="flex:1; margin-left:8px;">
+              <div style="height:5px; background:rgba(0,0,0,0.08); border-radius:3px; overflow:hidden; margin-bottom:4px;">
+                <div id="level-bar" style="height:100%; background:var(--teal); border-radius:3px; transition:width 0.3s ease; width:50%;"></div>
+              </div>
+              <div style="font-size:10px; color:var(--text3); display:flex; justify-content:space-between;"><span>0 dB</span><span>80 dB</span></div>
+            </div>
+          </div>
+          <div id="bracket-dots" style="display:flex; gap:4px; margin-top:8px; flex-wrap:wrap;"></div>
+        </div>
+
+        <div class="freq-grid" id="freq-grid">
+          <button class="freq-btn" onclick="startThresholdSearch(250,this)"><span>250</span><span class="freq-hz">Hz</span></button>
+          <button class="freq-btn" onclick="startThresholdSearch(500,this)"><span>500</span><span class="freq-hz">Hz</span></button>
+          <button class="freq-btn" onclick="startThresholdSearch(1000,this)"><span>1k</span><span class="freq-hz">Hz</span></button>
+          <button class="freq-btn" onclick="startThresholdSearch(2000,this)"><span>2k</span><span class="freq-hz">Hz</span></button>
+          <button class="freq-btn" onclick="startThresholdSearch(3000,this)"><span>3k</span><span class="freq-hz">Hz</span></button>
+          <button class="freq-btn" onclick="startThresholdSearch(4000,this)"><span>4k</span><span class="freq-hz">Hz</span></button>
+          <button class="freq-btn" onclick="startThresholdSearch(6000,this)"><span>6k</span><span class="freq-hz">Hz</span></button>
+          <button class="freq-btn" onclick="startThresholdSearch(8000,this)"><span>8k</span><span class="freq-hz">Hz</span></button>
+        </div>
+
+        <p style="font-size:12px; color:var(--text2); text-align:center; margin:8px 0 4px; min-height:18px;" id="audio-prompt">Select a frequency to start threshold search</p>
+
+        <div class="btn-row" id="response-btns" style="opacity:0.35; pointer-events:none;">
+          <button class="btn-half heard" id="btn-heard" onclick="markHeard()">✓ I heard it</button>
+          <button class="btn-half missed" id="btn-missed" onclick="markMissed()">✗ Can't hear</button>
+        </div>
+
+        <div id="replay-row" style="display:none; margin-top:8px;">
+          <button class="btn-outline" onclick="replayCurrentTone()">↻ Replay tone</button>
+        </div>
+
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-top:8px;">
+          <button class="btn-outline" onclick="resetEar('R')" style="font-size:12px; color:#e53e3e; border-color:#e53e3e;">↺ Reset Right</button>
+          <button class="btn-outline" onclick="resetEar('L')" style="font-size:12px; color:#3b82f6; border-color:#3b82f6;">↺ Reset Left</button>
+        </div>
+      </div>
+
+      <div id="threshold-summary" style="display:none;" class="card">
+        <div class="card-title" id="summary-title">Threshold results</div>
+        <div id="threshold-rows"></div>
+        <div class="alert alert-info" style="margin-top:10px; margin-bottom:0">
+          <div class="alert-icon">ℹ</div>
+          <div>Thresholds are the softest level you reliably detected. Normal hearing ≤ 25 dB HL across frequencies.</div>
+        </div>
+      </div>
+
+      <div class="alert alert-info" id="audio-complete" style="display:none">
+        <div class="alert-icon">✓</div>
+        <div>Audiogram complete — all frequencies tested. Thresholds saved to your health history.</div>
+      </div>
+    </div>
+
+        <!-- TINNITUS -->
+    <div class="screen" id="screen-tinnitus">
+      <div class="section-head">Tinnitus profile</div>
+
+      <div class="card card-accent">
+        <div class="card-title">A/B pitch matching <span class="pill pill-teal">Live tone</span></div>
+        <p style="font-size:13px; color:var(--text2); margin-bottom:16px; line-height:1.5">Adjust the sliders until the reference tone matches your tinnitus. Plays through your MFi device.</p>
+
+        <div class="slider-section">
+          <div class="slider-header">
+            <span class="slider-name">Pitch</span>
+            <span class="slider-val" id="pitch-val">6,000 Hz</span>
+          </div>
+          <input type="range" min="1000" max="12000" value="6000" step="100" id="pitch-slider" oninput="updatePitch()">
+        </div>
+
+        <div class="slider-section">
+          <div class="slider-header">
+            <span class="slider-name">Loudness</span>
+            <span class="slider-val" id="loud-val">4 / 10</span>
+          </div>
+          <input type="range" min="1" max="10" value="4" step="1" id="loud-slider" oninput="updateLoud()">
+        </div>
+
+        <div class="btn-row">
+          <button class="btn-half" onclick="playTinnitusRef()" id="t-play-btn">▶ Play tone</button>
+          <button class="btn-half" onclick="stopTinnitus()">■ Stop</button>
+        </div>
+        <button class="btn-main" onclick="saveTinnitus()">Save snapshot</button>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Snapshot history</div>
+        <div class="history-item">
+          <div>
+            <div class="history-label">6,000 Hz · Level 4</div>
+            <div class="history-sub">Stable — within 200 Hz for 4 weeks</div>
+          </div>
+          <div class="history-date">Today</div>
+        </div>
+        <div class="history-item">
+          <div><div class="history-label">5,900 Hz · Level 4</div></div>
+          <div class="history-date">1 week</div>
+        </div>
+        <div class="history-item">
+          <div><div class="history-label">6,100 Hz · Level 5</div></div>
+          <div class="history-date">2 weeks</div>
+        </div>
+        <div class="history-item">
+          <div><div class="history-label">6,000 Hz · Level 4</div></div>
+          <div class="history-date">3 weeks</div>
+        </div>
+        <div class="alert alert-info" style="margin-top:10px; margin-bottom:0">
+          <div class="alert-icon">📊</div>
+          <div>Tinnitus pitch is stable. No significant progression detected this month.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- OAE SCAN -->
+    <div class="screen" id="screen-oae">
+      <div class="section-head">Cochlear fitness (OAE)</div>
+
+      <div class="card card-accent">
+        <div class="card-title">DPOAE scan <span class="pill pill-teal" id="oae-pill">Ready</span></div>
+        <div class="scan-anim">
+          <div class="scan-circle">
+            <div class="scan-ring" id="scan-ring"></div>
+            <div id="scan-icon" style="font-size:40px">🔬</div>
+          </div>
+          <div class="scan-pct" id="scan-pct" style="display:none">0%</div>
+          <div class="scan-msg" id="scan-msg">90-second scan using distortion product otoacoustic emissions</div>
+        </div>
+        <div class="progress-track" style="margin-bottom:12px"><div class="progress-fill" id="oae-progress"></div></div>
+        <button class="btn-main" id="oae-btn" onclick="startOAE()">▶ Start cochlear scan</button>
+      </div>
+
+      <div id="oae-results" style="display:none">
+        <div class="card">
+          <div class="card-title">DP-gram results <span class="pill pill-teal">Informational</span></div>
+          <div style="position:relative; height:150px">
+            <canvas id="oaeChart" class="chart-canvas" role="img" aria-label="DP-gram OAE amplitude by frequency"></canvas>
+          </div>
+          <div class="snr-row" id="snr-chips"></div>
+        </div>
+
+        <div class="card">
+          <div class="card-title">OHC function trend</div>
+          <div style="position:relative; height:110px">
+            <canvas id="oaeTrend" class="chart-canvas" role="img" aria-label="Outer hair cell function 8-week trend"></canvas>
+          </div>
+        </div>
+
+        <div class="alert alert-info">
+          <div class="alert-icon">ℹ</div>
+          <div>Informational cochlear wellness data — not a diagnostic or screening tool. Like HRV for the ear.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- DEVICE -->
+    <div class="screen" id="screen-device">
+      <div class="section-head">My device</div>
+
+      <div class="card">
+        <div class="card-title">Connected hardware</div>
+        <div class="device-row">
+          <div class="device-icon">🎧</div>
+          <div class="device-info">
+            <div class="device-name">OtoLabs MFi Earbud</div>
+            <div class="device-detail">MFi Certified · RIC form · Right ear</div>
+          </div>
+          <div class="badge-connected">Connected</div>
+        </div>
+        <div class="device-row">
+          <div class="device-icon" style="background:rgba(245,166,35,0.1)">🔋</div>
+          <div class="device-info">
+            <div class="device-name">Battery</div>
+            <div class="device-detail">~6h remaining</div>
+          </div>
+          <span style="font-family:'DM Mono',monospace; font-size:16px; font-weight:600; color:var(--teal)">82%</span>
+        </div>
+        <div class="device-row">
+          <div class="device-icon" style="background:rgba(31,207,150,0.08)">⚙️</div>
+          <div class="device-info">
+            <div class="device-name">Firmware v0.9.2</div>
+            <div class="device-detail">Up to date</div>
+          </div>
+          <span class="pill pill-teal">Latest</span>
+        </div>
+        <div class="device-row">
+          <div class="device-icon" style="background:rgba(31,207,150,0.08)">📐</div>
+          <div class="device-info">
+            <div class="device-name">Calibration</div>
+            <div class="device-detail">May 18, 2026 · ±1.2 dB SPL</div>
+          </div>
+          <span class="pill pill-teal">OK</span>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Dome configuration</div>
+        <p style="font-size:13px; color:var(--text2); margin-bottom:0">Switch domes depending on your task. Swap physically, then confirm here.</p>
+        <div class="dome-row">
+          <div class="dome-card active" id="dome-open" onclick="selectDome('open')">
+            <div style="font-size:24px; margin-bottom:6px">○</div>
+            <div class="dome-name">Open dome</div>
+            <div class="dome-sub">Daily wear & audio streaming</div>
+            <div class="dome-indicator teal">● Active</div>
+          </div>
+          <div class="dome-card" id="dome-measure" onclick="selectDome('measure')">
+            <div style="font-size:24px; margin-bottom:6px">◉</div>
+            <div class="dome-name">Measurement dome</div>
+            <div class="dome-sub">OAE scans & audiogram</div>
+            <div class="dome-indicator" style="color:var(--text3)">○ Inactive</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Audio routing</div>
+        <p style="font-size:13px; color:var(--text2); margin-bottom:10px; line-height:1.5">Your MFi device is paired via iPhone Accessibility settings. All test tones route through it automatically.</p>
+        <button class="btn-outline" onclick="showToast('Opening Settings → Accessibility → Hearing Devices…')">Open iPhone Accessibility settings ↗</button>
+      </div>
+    </div>
+
+  </div>
+
+  <nav class="bottom-nav">
+    <button class="nav-item active" onclick="showScreen('home',this)">
+      <div class="nav-icon">🏠</div><span>Home</span>
+    </button>
+    <button class="nav-item" onclick="showScreen('noise',this)">
+      <div class="nav-icon">🔊</div><span>Noise</span>
+    </button>
+    <button class="nav-item" onclick="showScreen('hearing',this)">
+      <div class="nav-icon">👂</div><span>Hearing</span>
+    </button>
+    <button class="nav-item" onclick="showScreen('tinnitus',this)">
+      <div class="nav-icon">〰️</div><span>Tinnitus</span>
+    </button>
+    <button class="nav-item" onclick="showScreen('oae',this)">
+      <div class="nav-icon">🔬</div><span>OAE</span>
+    </button>
+    <button class="nav-item" onclick="showScreen('device',this)">
+      <div class="nav-icon">🎧</div><span>Device</span>
+    </button>
+  </nav>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<script>
+// ── NAVIGATION ──
+function showScreen(name, el) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('active'));
+  document.getElementById('screen-' + name).classList.add('active');
+  if (el) el.classList.add('active');
+  if (name === 'home') { initTrend(); initDoseChart(); }
+  if (name === 'noise') { initDoseChart(); }
+  if (name === 'hearing') { setTimeout(drawAudiogram, 80); }
+  if (name === 'oae') { initOAETrend(); }
+}
+
+// ── TOAST ──
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2500);
+}
+
+// ── AUDIO CONTEXT ──
+let audioCtx = null;
+function getCtx() {
+  if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  if (audioCtx.state === 'suspended') audioCtx.resume();
+  return audioCtx;
+}
+
+// ── NOISE DOSIMETRY ──
+let micStream = null, analyser = null, micActive = false, rafId = null;
+let doseAccum = 0, lastDbTime = Date.now();
+
+async function toggleMic() {
+  const btn = document.getElementById('mic-btn');
+  if (micActive) {
+    micActive = false;
+    if (micStream) micStream.getTracks().forEach(t => t.stop());
+    cancelAnimationFrame(rafId);
+    btn.textContent = '▶ Start monitoring';
+    document.getElementById('db-display').innerHTML = '—<span class="db-unit"> dB</span>';
+    document.getElementById('db-bar').style.width = '0%';
+    document.getElementById('db-desc').textContent = 'Tap above to begin measuring';
+    document.getElementById('noise-pill').textContent = 'Ready';
+    document.getElementById('noise-pill').className = 'pill pill-teal';
+    return;
+  }
+  try {
+    micStream = await navigator.mediaDevices.getUserMedia({ audio: true, video: false });
+    const ctx = getCtx();
+    const src = ctx.createMediaStreamSource(micStream);
+    analyser = ctx.createAnalyser();
+    analyser.fftSize = 1024;
+    src.connect(analyser);
+    micActive = true;
+    btn.textContent = '■ Stop monitoring';
+    meterLoop();
+  } catch(e) {
+    showToast('Microphone access denied');
+    document.getElementById('db-desc').textContent = 'Please allow microphone access in Safari Settings';
+  }
+}
+
+function meterLoop() {
+  if (!micActive) return;
+  const data = new Float32Array(analyser.fftSize);
+  analyser.getFloatTimeDomainData(data);
+  let sum = 0;
+  for (let i = 0; i < data.length; i++) sum += data[i] * data[i];
+  const rms = Math.sqrt(sum / data.length);
+  const db = Math.max(30, Math.min(104, 20 * Math.log10(rms + 1e-6) + 94));
+  const dbRounded = Math.round(db);
+
+  const disp = document.getElementById('db-display');
+  disp.innerHTML = dbRounded + '<span class="db-unit"> dB</span>';
+  disp.style.color = db >= 85 ? '#C0392B' : db >= 70 ? '#B45A00' : '#1D9E75';
+
+  const pct = Math.max(0, Math.min(100, (db - 30) / 74 * 100));
+  const bar = document.getElementById('db-bar');
+  bar.style.width = pct + '%';
+  bar.style.background = db >= 85 ? 'var(--red)' : db >= 70 ? 'var(--amber)' : 'var(--teal)';
+
+  const pill = document.getElementById('noise-pill');
+  const desc = document.getElementById('db-desc');
+  if (db >= 85) {
+    desc.textContent = '⚠ Hazardous — reduce exposure immediately';
+    pill.textContent = 'Hazardous'; pill.className = 'pill pill-red';
+  } else if (db >= 70) {
+    desc.textContent = 'Moderate noise — dose accumulating';
+    pill.textContent = 'Moderate'; pill.className = 'pill pill-amber';
+  } else {
+    desc.textContent = 'Safe listening level';
+    pill.textContent = 'Safe'; pill.className = 'pill pill-teal';
+  }
+
+  // update dashboard live db
+  const dashDb = document.getElementById('dash-db');
+  if (dashDb) dashDb.textContent = dbRounded + ' dB';
+
+  // accumulate dose (simplified)
+  const now = Date.now();
+  const elapsed = (now - lastDbTime) / 3600000;
+  if (db >= 85) {
+    const doses = { 85: 8, 88: 4, 91: 2, 94: 1, 97: 0.5, 100: 0.25 };
+    let base = 8;
+    for (const [threshold, hours] of Object.entries(doses)) {
+      if (db >= Number(threshold)) base = hours;
+    }
+    doseAccum += (elapsed / base) * 100;
+    const pctDose = Math.min(99, Math.round(34 + doseAccum));
+    document.getElementById('daily-dose').textContent = pctDose + '%';
+    document.getElementById('dash-dose').textContent = pctDose + '%';
+  }
+  lastDbTime = now;
+
+  rafId = requestAnimationFrame(meterLoop);
+}
+
+// ── AUDIOGRAM — Modified Hughson-Westlake, L/R ear ──────────────────────────
+const freqs = [250, 500, 1000, 2000, 3000, 4000, 6000, 8000];
+const normDB = {250:10,500:10,1000:5,2000:10,3000:15,4000:20,6000:30,8000:20};
+
+// Separate threshold stores per ear
+let audiogramData = { R: {}, L: {} };
+let activeEar = 'R';           // 'R' | 'L'
+let searchState = null;
+let activeFreqBtn = null;
+let toneOsc = null;
+
+const EAR_COLOR = { R: '#e53e3e', L: '#3b82f6' };
+const EAR_LABEL = { R: 'RIGHT EAR', L: 'LEFT EAR' };
+
+/*  dB HL -> gain (exponential approximation)
+    0 dB HL  ≈ 0.001,  20 ≈ 0.004,  40 ≈ 0.016,  60 ≈ 0.063,  80 ≈ 0.25    */
+function dBHLtoGain(dBHL) {
+  return Math.min(0.5, 0.001 * Math.pow(10, dBHL / 40));
+}
+
+// ── EAR SELECTION ──
+function selectEar(ear) {
+  if (searchState) {
+    showToast('Finish current test before switching ears');
+    return;
+  }
+  activeEar = ear;
+
+  const rBtn = document.getElementById('ear-btn-R');
+  const lBtn = document.getElementById('ear-btn-L');
+  if (ear === 'R') {
+    rBtn.style.background = '#e53e3e'; rBtn.style.color = '#fff';
+    lBtn.style.background = 'var(--card)'; lBtn.style.color = 'var(--text3)';
+  } else {
+    lBtn.style.background = '#3b82f6'; lBtn.style.color = '#fff';
+    rBtn.style.background = 'var(--card)'; rBtn.style.color = 'var(--text3)';
+  }
+  document.getElementById('ear-indicator-label').textContent = EAR_LABEL[ear];
+  document.getElementById('ear-indicator-label').style.color = EAR_COLOR[ear];
+
+  // Refresh freq buttons to show current ear's confirmed thresholds
+  refreshFreqButtons();
+  drawAudiogram();
+  showToast(ear === 'R' ? 'Right ear selected' : 'Left ear selected');
+}
+
+function refreshFreqButtons() {
+  const earData = audiogramData[activeEar];
+  document.querySelectorAll('.freq-btn').forEach((btn, i) => {
+    const freq = freqs[i];
+    btn.classList.remove('heard', 'missed', 'playing');
+    const sub = btn.querySelector('.freq-hz');
+    const span = btn.querySelector('span:first-child');
+    if (span) span.textContent = freq >= 1000 ? (freq/1000)+'k' : freq;
+    if (sub) sub.textContent = 'Hz';
+    if (earData[freq] !== undefined) {
+      const db = earData[freq];
+      btn.classList.add(db <= 25 ? 'heard' : 'missed');
+      if (sub) sub.textContent = db + ' dBHL';
+      // Tint border to ear color
+      btn.style.borderColor = EAR_COLOR[activeEar];
+    } else {
+      btn.style.borderColor = '';
+    }
+  });
+}
+
+// ── AUDIOGRAM CANVAS ──
+function drawAudiogram() {
+  const canvas = document.getElementById('audiogramCanvas');
+  if (!canvas) return;
+  const ctx2 = canvas.getContext('2d');
+  const dpr = window.devicePixelRatio || 1;
+  const W = canvas.offsetWidth, H = 180;
+  canvas.width = W * dpr; canvas.height = H * dpr;
+  ctx2.scale(dpr, dpr);
+
+  const padL = 38, padR = 10, padT = 14, padB = 20;
+  const cW = W - padL - padR, cH = H - padT - padB;
+  ctx2.clearRect(0, 0, W, H);
+
+  const minDB = -10, maxDB = 90;
+  const dbLines = [0, 10, 20, 25, 30, 40, 50, 60, 70, 80];
+
+  ctx2.font = '9px DM Mono, monospace';
+  ctx2.textAlign = 'right';
+  dbLines.forEach(db => {
+    const y = padT + ((db - minDB) / (maxDB - minDB)) * cH;
+    ctx2.strokeStyle = db === 0 ? 'rgba(255,255,255,0.18)' : 'rgba(255,255,255,0.06)';
+    ctx2.lineWidth = db === 0 ? 1 : 0.5;
+    ctx2.beginPath(); ctx2.moveTo(padL, y); ctx2.lineTo(padL + cW, y); ctx2.stroke();
+    if (db % 10 === 0) {
+      ctx2.fillStyle = 'rgba(26,35,64,0.4)';
+      ctx2.fillText(db, padL - 3, y + 3);
+    }
+  });
+
+  // Shade normal hearing zone (0–25 dB HL)
+  const y0 = padT + ((0 - minDB) / (maxDB - minDB)) * cH;
+  const y25 = padT + ((25 - minDB) / (maxDB - minDB)) * cH;
+  ctx2.fillStyle = 'rgba(29,158,117,0.05)';
+  ctx2.fillRect(padL, y0, cW, y25 - y0);
+
+  const freqXmap = {};
+  freqs.forEach((f, i) => {
+    const x = padL + (i / (freqs.length - 1)) * cW;
+    freqXmap[f] = x;
+    ctx2.strokeStyle = 'rgba(0,0,0,0.04)';
+    ctx2.lineWidth = 0.5;
+    ctx2.beginPath(); ctx2.moveTo(x, padT); ctx2.lineTo(x, padT + cH); ctx2.stroke();
+    ctx2.fillStyle = 'rgba(26,35,64,0.35)';
+    ctx2.textAlign = 'center';
+    const lbl = f >= 1000 ? (f/1000)+'k' : f;
+    ctx2.fillText(lbl, x, padT + cH + 13);
+  });
+
+  // Normal boundary dashed line
+  ctx2.strokeStyle = 'rgba(29,158,117,0.3)';
+  ctx2.setLineDash([4,4]); ctx2.lineWidth = 1;
+  ctx2.beginPath();
+  freqs.forEach((f, i) => {
+    const x = freqXmap[f];
+    const y = padT + ((25 - minDB) / (maxDB - minDB)) * cH;
+    i === 0 ? ctx2.moveTo(x, y) : ctx2.lineTo(x, y);
+  });
+  ctx2.stroke(); ctx2.setLineDash([]);
+
+  // Ghost marker for active search
+  if (searchState && freqXmap[searchState.freq]) {
+    const x = freqXmap[searchState.freq];
+    const y = padT + ((Math.max(0, searchState.currentDB) - minDB) / (maxDB - minDB)) * cH;
+    ctx2.strokeStyle = EAR_COLOR[activeEar] + '88';
+    ctx2.lineWidth = 1.5; ctx2.setLineDash([2,3]);
+    ctx2.beginPath(); ctx2.arc(x, y, 7, 0, Math.PI*2); ctx2.stroke();
+    ctx2.setLineDash([]);
+  }
+
+  // Draw both ears' confirmed data
+  ['R', 'L'].forEach(ear => {
+    const earData = audiogramData[ear];
+    const col = EAR_COLOR[ear];
+    const measured = Object.keys(earData).map(Number).sort((a,b)=>a-b);
+    if (measured.length === 0) return;
+
+    // Connect-the-dots line
+    if (measured.length > 1) {
+      ctx2.strokeStyle = col; ctx2.lineWidth = 1.5; ctx2.setLineDash([]);
+      ctx2.beginPath();
+      measured.forEach((f, i) => {
+        if (!freqXmap[f]) return;
+        const x = freqXmap[f];
+        const y = padT + ((earData[f] - minDB) / (maxDB - minDB)) * cH;
+        i === 0 ? ctx2.moveTo(x, y) : ctx2.lineTo(x, y);
+      });
+      ctx2.stroke();
+    }
+
+    // Symbols: O (circle) = Right, X (cross) = Left  — standard audiogram convention
+    measured.forEach(f => {
+      if (!freqXmap[f]) return;
+      const x = freqXmap[f];
+      const y = padT + ((earData[f] - minDB) / (maxDB - minDB)) * cH;
+      ctx2.strokeStyle = col; ctx2.lineWidth = 2.5; ctx2.setLineDash([]);
+      if (ear === 'R') {
+        // Open circle
+        ctx2.beginPath(); ctx2.arc(x, y, 6, 0, Math.PI*2); ctx2.stroke();
+      } else {
+        // X cross
+        const s = 5.5;
+        ctx2.beginPath(); ctx2.moveTo(x-s, y-s); ctx2.lineTo(x+s, y+s); ctx2.stroke();
+        ctx2.beginPath(); ctx2.moveTo(x+s, y-s); ctx2.lineTo(x-s, y+s); ctx2.stroke();
+      }
+    });
+  });
+}
+
+// ── THRESHOLD SEARCH ──
+function startThresholdSearch(freq, btn) {
+  if (toneOsc) { try { toneOsc.stop(); } catch(e){} toneOsc = null; }
+
+  const earData = audiogramData[activeEar];
+  if (earData[freq] !== undefined) {
+    const fStr = freq >= 1000 ? freq/1000+'k' : freq;
+    if (!confirm('Re-test ' + fStr + ' Hz (' + EAR_LABEL[activeEar] + ')?')) return;
+    delete earData[freq];
+    btn.classList.remove('heard', 'missed');
+    btn.style.borderColor = '';
+  }
+
+  if (activeFreqBtn && activeFreqBtn !== btn) activeFreqBtn.classList.remove('playing');
+  activeFreqBtn = btn;
+  btn.classList.add('playing');
+
+  // Modified Hughson-Westlake:
+  // Descend 10 dB on each heard response
+  // Ascend 5 dB on each missed response
+  // Threshold = level heard on 2 ascending presentations (2-for-2 or 2-for-3)
+  searchState = {
+    freq,
+    ear: activeEar,
+    currentDB: 40,       // start at 40 dB HL
+    history: [],
+    // Track ascending runs separately
+    lastDirection: null, // null | 'up' | 'down'
+    // For the 2-ascending criterion we track heard responses at each level
+    levelResponses: {},  // db -> { heard: N, total: N }
+    confirmed: false
+  };
+
+  document.getElementById('ear-indicator-label').textContent = EAR_LABEL[activeEar];
+  document.getElementById('ear-indicator-label').style.color = EAR_COLOR[activeEar];
+  updateLevelUI();
+  enableResponseBtns(true);
+  playCurrentTone();
+}
+
+function updateLevelUI() {
+  if (!searchState) return;
+  const { freq, currentDB, ear } = searchState;
+  const fStr = freq >= 1000 ? (freq/1000)+'k Hz' : freq+' Hz';
+  const col = EAR_COLOR[ear];
+
+  document.getElementById('level-indicator').style.display = 'block';
+  document.getElementById('search-freq-label').textContent = fStr;
+
+  const dbVal = Math.max(0, currentDB);
+  document.getElementById('current-db-display').textContent = dbVal;
+  document.getElementById('current-db-display').style.color = col;
+
+  const barPct = Math.max(0, Math.min(100, dbVal / 80 * 100));
+  const bar = document.getElementById('level-bar');
+  bar.style.width = barPct + '%';
+  bar.style.background = col;
+
+  // Bracket dots
+  const dots = document.getElementById('bracket-dots');
+  dots.innerHTML = searchState.history.slice(-14).map(h =>
+    `<span title="${h.db} dB" style="width:20px;height:20px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;
+      font-size:10px;font-weight:700;
+      background:${h.heard ? col+'22' : 'rgba(200,50,50,0.12)'};
+      color:${h.heard ? col : '#e05'};
+      border:1px solid ${h.heard ? col+'66' : 'rgba(200,50,50,0.35)'};
+      ">${h.heard ? '✓' : '✗'}</span>`
+  ).join('');
+
+  // Prompt
+  document.getElementById('audio-prompt').textContent =
+    '(' + (ear === 'R' ? 'R' : 'L') + ') ' + fStr + ' at ' + dbVal + ' dB HL — did you hear it?';
+
+  document.getElementById('replay-row').style.display = 'block';
+}
+
+function playCurrentTone(duration = 1.5) {
+  if (!searchState) return;
+  if (toneOsc) { try { toneOsc.stop(); } catch(e){} toneOsc = null; }
+
+  const actx = getCtx();
+  const osc = actx.createOscillator();
+  const gain = actx.createGain();
+  // Stereo panner: R ear = +1, L ear = -1
+  const panner = actx.createStereoPanner ? actx.createStereoPanner() : null;
+
+  osc.type = 'sine';
+  osc.frequency.value = searchState.freq;
+
+  const g = dBHLtoGain(searchState.currentDB);
+  gain.gain.setValueAtTime(0, actx.currentTime);
+  gain.gain.linearRampToValueAtTime(g, actx.currentTime + 0.05);
+  gain.gain.setValueAtTime(g, actx.currentTime + duration - 0.15);
+  gain.gain.linearRampToValueAtTime(0, actx.currentTime + duration);
+
+  if (panner) {
+    panner.pan.value = searchState.ear === 'R' ? 1.0 : -1.0;
+    osc.connect(gain); gain.connect(panner); panner.connect(actx.destination);
+  } else {
+    osc.connect(gain); gain.connect(actx.destination);
+  }
+
+  osc.start(); osc.stop(actx.currentTime + duration + 0.05);
+  toneOsc = osc;
+  drawAudiogram();
+}
+
+function replayCurrentTone() {
+  if (!searchState) return;
+  playCurrentTone();
+}
+
+function enableResponseBtns(on) {
+  const btns = document.getElementById('response-btns');
+  btns.style.opacity = on ? '1' : '0.35';
+  btns.style.pointerEvents = on ? 'auto' : 'none';
+}
+
+function markHeard() {
+  if (!searchState) return;
+  const db = searchState.currentDB;
+  searchState.history.push({ db, heard: true });
+
+  // Track responses per level for the 2-ascending criterion
+  if (!searchState.levelResponses[db]) searchState.levelResponses[db] = { heard: 0, total: 0 };
+  searchState.levelResponses[db].heard++;
+  searchState.levelResponses[db].total++;
+
+  const prevDir = searchState.lastDirection;
+  searchState.lastDirection = 'down'; // hearing it → we came from above or will descend
+
+  // THRESHOLD CRITERION: 2 heard responses at the same level on ascending presentations
+  // An ascending presentation = we arrived at this level from below (lastDirection was 'up')
+  // We satisfy it if we have 2 "heard" at this level across ascending runs
+  const resp = searchState.levelResponses[db];
+  if (resp.heard >= 2) {
+    confirmThreshold(db);
+    return;
+  }
+
+  // Descend 10 dB — look for lower threshold
+  searchState.currentDB = Math.max(0, db - 10);
+  updateLevelUI();
+  setTimeout(playCurrentTone, 500);
+}
+
+function markMissed() {
+  if (!searchState) return;
+  const db = searchState.currentDB;
+  searchState.history.push({ db, heard: false });
+
+  if (!searchState.levelResponses[db]) searchState.levelResponses[db] = { heard: 0, total: 0 };
+  searchState.levelResponses[db].total++;
+
+  searchState.lastDirection = 'up'; // missed → ascending
+
+  // Ascend 5 dB
+  searchState.currentDB = Math.min(80, db + 5);
+  updateLevelUI();
+  setTimeout(playCurrentTone, 500);
+}
+
+function confirmThreshold(db) {
+  const { freq, ear } = searchState;
+  audiogramData[ear][freq] = db;
+  searchState.confirmed = true;
+  searchState = null;
+
+  if (activeFreqBtn) {
+    activeFreqBtn.classList.remove('playing');
+    activeFreqBtn.classList.add(db <= 25 ? 'heard' : 'missed');
+    activeFreqBtn.style.borderColor = EAR_COLOR[ear];
+    const sub = activeFreqBtn.querySelector('.freq-hz');
+    if (sub) sub.textContent = db + ' dBHL';
+  }
+
+  document.getElementById('level-indicator').style.display = 'none';
+  document.getElementById('replay-row').style.display = 'none';
+  enableResponseBtns(false);
+
+  const fStr = freq >= 1000 ? (freq/1000)+'k Hz' : freq+' Hz';
+  const cat = db <= 25 ? 'Normal' : db <= 40 ? 'Mild' : db <= 55 ? 'Moderate' : 'Significant';
+  document.getElementById('audio-prompt').textContent =
+    '✓ ' + (ear === 'R' ? 'R' : 'L') + ' threshold: ' + fStr + ' = ' + db + ' dB HL (' + cat + ')';
+
+  showToast((ear === 'R' ? 'R' : 'L') + ' ' + fStr + ': ' + db + ' dB HL');
+  drawAudiogram();
+  updateThresholdSummary();
+  checkAudioComplete();
+}
+
+function updateThresholdSummary() {
+  const rData = audiogramData.R, lData = audiogramData.L;
+  const hasAny = Object.keys(rData).length + Object.keys(lData).length > 0;
+  if (!hasAny) return;
+
+  document.getElementById('threshold-summary').style.display = 'block';
+  const catLabel = db => db <= 25 ? 'Normal' : db <= 40 ? 'Mild' : db <= 55 ? 'Moderate' : 'Severe';
+
+  const rows = freqs.map(f => {
+    const r = rData[f]; const l = lData[f];
+    if (r === undefined && l === undefined) return '';
+    const fStr = f >= 1000 ? (f/1000)+'k Hz' : f+' Hz';
+    const rCell = r !== undefined
+      ? `<span style="color:#e53e3e;font-family:'DM Mono',monospace;font-weight:600;font-size:15px">${r}</span><span style="font-size:9px;color:var(--text3)"> dB</span>`
+      : `<span style="color:var(--text3);font-size:12px">—</span>`;
+    const lCell = l !== undefined
+      ? `<span style="color:#3b82f6;font-family:'DM Mono',monospace;font-weight:600;font-size:15px">${l}</span><span style="font-size:9px;color:var(--text3)"> dB</span>`
+      : `<span style="color:var(--text3);font-size:12px">—</span>`;
+    return `<div style="display:flex;align-items:center;padding:9px 0;border-bottom:0.5px solid var(--card-border);">
+      <span style="font-size:13px;font-weight:500;flex:1">${fStr}</span>
+      <span style="min-width:56px;text-align:right">${rCell}</span>
+      <span style="min-width:56px;text-align:right">${lCell}</span>
+    </div>`;
+  }).join('');
+
+  const header = `<div style="display:flex;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;padding:0 0 6px;border-bottom:1.5px solid var(--card-border);margin-bottom:2px;">
+    <span style="flex:1;color:var(--text2)">Freq</span>
+    <span style="min-width:56px;text-align:right;color:#e53e3e">Right</span>
+    <span style="min-width:56px;text-align:right;color:#3b82f6">Left</span>
+  </div>`;
+
+  document.getElementById('threshold-rows').innerHTML = header + rows;
+}
+
+function checkAudioComplete() {
+  const r = Object.keys(audiogramData.R).length;
+  const l = Object.keys(audiogramData.L).length;
+  if (r >= 6 || l >= 6) {
+    document.getElementById('audio-complete').style.display = 'flex';
+    if (r >= 6 && l >= 6) showToast('Both ears complete ✓');
+  }
+}
+
+function resetEar(ear) {
+  if (searchState && searchState.ear === ear) {
+    if (!confirm('Cancel current test and reset ' + EAR_LABEL[ear] + '?')) return;
+    searchState = null;
+    if (toneOsc) { try { toneOsc.stop(); } catch(e){} toneOsc = null; }
+  }
+  audiogramData[ear] = {};
+  if (activeEar === ear) {
+    refreshFreqButtons();
+    document.getElementById('audio-prompt').textContent = 'Select a frequency to start threshold search';
+    document.getElementById('level-indicator').style.display = 'none';
+    document.getElementById('replay-row').style.display = 'none';
+    enableResponseBtns(false);
+  }
+  const r = Object.keys(audiogramData.R).length + Object.keys(audiogramData.L).length;
+  if (r === 0) {
+    document.getElementById('audio-complete').style.display = 'none';
+    document.getElementById('threshold-summary').style.display = 'none';
+  } else {
+    updateThresholdSummary();
+  }
+  drawAudiogram();
+  showToast(EAR_LABEL[ear] + ' reset');
+}
+
+function resetAudiogram() {
+  resetEar('R'); resetEar('L');
+  document.getElementById('threshold-rows').innerHTML = '';
+}
+
+
+// ── TINNITUS ──
+let tinOsc = null, tinGain = null;
+
+function updatePitch() {
+  const f = parseInt(document.getElementById('pitch-slider').value);
+  document.getElementById('pitch-val').textContent = f >= 1000 ? (f/1000).toFixed(1)+' kHz' : f+' Hz';
+  if (tinOsc) tinOsc.frequency.value = f;
+}
+
+function updateLoud() {
+  const l = parseInt(document.getElementById('loud-slider').value);
+  document.getElementById('loud-val').textContent = l + ' / 10';
+  if (tinGain) tinGain.gain.value = l / 35;
+}
+
+function playTinnitusRef() {
+  stopTinnitus();
+  const ctx = getCtx();
+  tinOsc = ctx.createOscillator();
+  tinGain = ctx.createGain();
+  const f = parseInt(document.getElementById('pitch-slider').value);
+  const l = parseInt(document.getElementById('loud-slider').value);
+  tinOsc.type = 'sine'; tinOsc.frequency.value = f;
+  tinGain.gain.value = l / 35;
+  tinOsc.connect(tinGain); tinGain.connect(ctx.destination);
+  tinOsc.start();
+  document.getElementById('t-play-btn').textContent = '▶ Playing…';
+}
+
+function stopTinnitus() {
+  if (tinOsc) { try { tinOsc.stop(); } catch(e){} tinOsc = null; tinGain = null; }
+  const btn = document.getElementById('t-play-btn');
+  if (btn) btn.textContent = '▶ Play tone';
+}
+
+function saveTinnitus() {
+  stopTinnitus();
+  const f = parseInt(document.getElementById('pitch-slider').value);
+  const l = parseInt(document.getElementById('loud-slider').value);
+  const fStr = f >= 1000 ? (f/1000).toFixed(1)+' kHz' : f+' Hz';
+  showToast('Saved: ' + fStr + ' · Level ' + l);
+}
+
+// ── OAE SCAN ──
+let oaeScanInterval = null;
+let oaeChartInst = null, oaeTrendInst = null;
+
+function startOAE() {
+  if (oaeScanInterval) return;
+  const btn = document.getElementById('oae-btn');
+  btn.disabled = true;
+  document.getElementById('scan-ring').style.display = 'block';
+  document.getElementById('scan-icon').style.display = 'none';
+  document.getElementById('scan-pct').style.display = 'block';
+  const pill = document.getElementById('oae-pill');
+  pill.textContent = 'Scanning'; pill.className = 'pill pill-amber';
+  document.getElementById('oae-results').style.display = 'none';
+
+  const msgs = [
+    'Sending f1, f2 stimulus tones…',
+    'Detecting DP response at 2f1−f2…',
+    'Coherent averaging (64 sweeps)…',
+    'FFT extraction + noise floor gating…',
+    'Comparing to normative ranges…',
+    'Generating cochlear fitness score…'
+  ];
+  let pct = 0, mi = 0;
+  document.getElementById('scan-msg').textContent = msgs[0];
+
+  oaeScanInterval = setInterval(() => {
+    pct += 1.1;
+    const p = Math.min(100, pct);
+    document.getElementById('oae-progress').style.width = p + '%';
+    document.getElementById('scan-pct').textContent = Math.round(p) + '%';
+    const mIdx = Math.floor((p / 100) * msgs.length);
+    if (mIdx !== mi && mIdx < msgs.length) { mi = mIdx; document.getElementById('scan-msg').textContent = msgs[mi]; }
+    if (pct >= 100) {
+      clearInterval(oaeScanInterval); oaeScanInterval = null;
+      document.getElementById('scan-ring').style.display = 'none';
+      document.getElementById('scan-icon').style.display = 'block';
+      document.getElementById('scan-pct').style.display = 'none';
+      document.getElementById('scan-msg').textContent = '✓ Scan complete — DP-gram ready';
+      pill.textContent = 'Complete'; pill.className = 'pill pill-teal';
+      btn.disabled = false; btn.textContent = '↺ Repeat scan';
+      showOAEResults();
+    }
+  }, 55);
+}
+
+function showOAEResults() {
+  document.getElementById('oae-results').style.display = 'block';
+  const labels = ['1k','1.5k','2k','3k','4k','6k'];
+  const dp = [8.2, 7.8, 9.1, 8.5, 6.3, 4.1];
+  const noise = [1.2, 1.5, 1.1, 1.3, 1.4, 1.6];
+  const snr = dp.map((v,i) => +(v - noise[i]).toFixed(1));
+
+  const chips = document.getElementById('snr-chips');
+  chips.innerHTML = labels.map((f,i) => {
+    const s = snr[i]; const c = s >= 6 ? 'teal' : s >= 3 ? 'amber' : 'red';
+    return `<div class="snr-chip"><div class="snr-freq-lbl">${f} Hz</div><div class="snr-db ${c}">${s}</div><div class="snr-tag ${c}">SNR dB</div></div>`;
+  }).join('');
+
+  if (oaeChartInst) oaeChartInst.destroy();
+  const ctx = document.getElementById('oaeChart').getContext('2d');
+  oaeChartInst = new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels,
+      datasets: [
+        { label: 'DP amplitude', data: dp, backgroundColor: 'rgba(29,158,117,0.75)', borderRadius: 4 },
+        { label: 'Noise floor', data: noise, backgroundColor: 'rgba(0,0,0,0.15)', borderRadius: 4 }
+      ]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: { legend: { display: false } },
+      scales: {
+        y: { min: 0, max: 14, ticks: { color: 'rgba(26,35,64,0.45)', font: { size: 10 } }, grid: { color: 'rgba(0,0,0,0.05)' } },
+        x: { ticks: { color: 'rgba(26,35,64,0.45)', font: { size: 10 } }, grid: { display: false } }
+      }
+    }
+  });
+  initOAETrend();
+  showToast('OAE scan complete ✓');
+}
+
+function initOAETrend() {
+  const el = document.getElementById('oaeTrend');
+  if (!el) return;
+  if (oaeTrendInst) return;
+  oaeTrendInst = new Chart(el.getContext('2d'), {
+    type: 'line',
+    data: {
+      labels: ['W1','W2','W3','W4','W5','W6','W7','W8'],
+      datasets: [
+        { label: '2kHz', data: [7.8,8.0,8.2,8.1,8.5,8.8,9.0,9.1], borderColor: '#1D9E75', tension: 0.4, pointRadius: 2, borderWidth: 1.5 },
+        { label: '4kHz', data: [5.5,5.8,5.9,5.7,6.0,6.1,6.2,6.3], borderColor: '#B45A00', tension: 0.4, pointRadius: 2, borderWidth: 1.5 },
+        { label: '6kHz', data: [3.2,3.5,3.4,3.6,3.8,3.9,4.0,4.1], borderColor: '#C0392B', tension: 0.4, pointRadius: 2, borderWidth: 1.5 }
+      ]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: { legend: { display: false } },
+      scales: {
+        y: { min: 0, max: 14, ticks: { color: 'rgba(26,35,64,0.45)', font: { size: 10 } }, grid: { color: 'rgba(0,0,0,0.05)' } },
+        x: { ticks: { color: 'rgba(26,35,64,0.45)', font: { size: 10 } }, grid: { display: false } }
+      }
+    }
+  });
+}
+
+// ── CHARTS ──
+let trendInst = null;
+function initTrend() {
+  const el = document.getElementById('trendChart');
+  if (!el || trendInst) return;
+  trendInst = new Chart(el.getContext('2d'), {
+    type: 'line',
+    data: {
+      labels: ['Wk1','Wk2','Wk3','Wk4','Wk5','Wk6','Wk7','Wk8'],
+      datasets: [{
+        data: [78,79,80,78,81,82,83,84],
+        borderColor: '#1D9E75', backgroundColor: 'rgba(29,158,117,0.06)',
+        fill: true, tension: 0.4, pointRadius: 3, pointBackgroundColor: '#1D9E75', borderWidth: 1.5
+      }]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: { legend: { display: false } },
+      scales: {
+        y: { min: 70, max: 100, ticks: { color: 'rgba(26,35,64,0.45)', font: { size: 10 } }, grid: { color: 'rgba(0,0,0,0.05)' } },
+        x: { ticks: { color: 'rgba(26,35,64,0.45)', font: { size: 10 } }, grid: { display: false } }
+      }
+    }
+  });
+}
+
+let doseInst = null;
+function initDoseChart() {
+  const el = document.getElementById('doseChart');
+  if (!el || doseInst) return;
+  const colors = [52,58,65,70,88,74,68,71,72,69,75,0].map(v =>
+    v >= 85 ? 'rgba(192,57,43,0.75)' : v >= 70 ? 'rgba(180,90,0,0.65)' : 'rgba(29,158,117,0.7)'
+  );
+  doseInst = new Chart(el.getContext('2d'), {
+    type: 'bar',
+    data: {
+      labels: ['7a','8a','9a','10a','11a','12p','1p','2p','3p','4p','5p','6p'],
+      datasets: [{ data: [52,58,65,70,88,74,68,71,72,69,75,0], backgroundColor: colors, borderRadius: 3 }]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: { legend: { display: false } },
+      scales: {
+        y: { min: 40, max: 100, ticks: { color: 'rgba(26,35,64,0.45)', font: { size: 10 } }, grid: { color: 'rgba(0,0,0,0.05)' } },
+        x: { ticks: { color: 'rgba(26,35,64,0.45)', font: { size: 10 } }, grid: { display: false } }
+      }
+    }
+  });
+}
+
+// ── DEVICE ──
+function selectDome(type) {
+  const open = document.getElementById('dome-open');
+  const meas = document.getElementById('dome-measure');
+  if (type === 'open') {
+    open.classList.add('active'); meas.classList.remove('active');
+    open.querySelector('.dome-indicator').innerHTML = '<span style="color:var(--teal)">● Active</span>';
+    meas.querySelector('.dome-indicator').innerHTML = '<span style="color:var(--text3)">○ Inactive</span>';
+    showToast('Open dome active — audio streaming mode');
+  } else {
+    meas.classList.add('active'); open.classList.remove('active');
+    meas.querySelector('.dome-indicator').innerHTML = '<span style="color:var(--teal)">● Active</span>';
+    open.querySelector('.dome-indicator').innerHTML = '<span style="color:var(--text3)">○ Inactive</span>';
+    showToast('Measurement dome active — OAE/audiogram mode');
+  }
+}
+
+// ── INIT ──
+setTimeout(() => { initTrend(); initDoseChart(); drawAudiogram(); }, 200);
+</script>
+</body>
+</html>
